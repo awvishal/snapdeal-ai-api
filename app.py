@@ -3,11 +3,16 @@ import google.generativeai as genai
 import os
 import json
 
-genai.configure(api_key="your_key_here")
+# ✅ Hardcoded API key for now (move to env variable for prod)
+genai.configure(api_key="AIzaSyBWpPkPeCAqX_ua_AOgHiDUmuBmhvkvbLk")
+
+# ✅ Use Gemini 1.5 Flash model
 model = genai.GenerativeModel("models/gemini-1.5-flash-latest")
 
-app = Flask(__name__)  # ✅ Must come before any route decorators
+# ✅ Initialize Flask app
+app = Flask(__name__)
 
+# ✅ Main API route
 @app.route('/generate-bullets', methods=['POST'])
 def generate_bullets():
     data = request.json
@@ -15,6 +20,7 @@ def generate_bullets():
     user = data.get('user', {})
     custom_prompt = data.get('prompt', None)
 
+    # Use custom prompt if provided, else default
     if custom_prompt:
         prompt = custom_prompt
     else:
@@ -32,14 +38,19 @@ Give 3 friendly, persuasive bullet points in JSON format: {{"bullets": ["...", "
         text = response.text.strip("```json\n").strip("```").strip()
         bullets_json = json.loads(text)
     except Exception as e:
-        bullets_json = {"error": str(e), "raw_output": response.text}
+        bullets_json = {
+            "error": str(e),
+            "raw_output": "No response generated due to an exception."
+        }
 
     return jsonify(bullets_json)
 
+# ✅ Health check
 @app.route('/')
 def health():
     return "✅ Snapdeal AI API is live!"
 
+# ✅ Bind to 0.0.0.0 for Render
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
