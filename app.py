@@ -3,7 +3,7 @@ import google.generativeai as genai
 import os
 import json
 
-genai.configure(api_key="YOUR_GEMINI_API_KEY")  # Replace with your actual key
+genai.configure(api_key=os.environ.get("GENAI_API_KEY"))  # Securely read from env
 
 model = genai.GenerativeModel("models/gemini-1.5-flash-latest")
 
@@ -34,5 +34,7 @@ Give 3 friendly, persuasive bullet points in JSON format: {{"bullets": ["...", "
 
     return jsonify(bullets_json)
 
+# ✅ This is the only part that changed for Render:
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
