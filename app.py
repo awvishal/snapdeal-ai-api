@@ -1,4 +1,3 @@
-
 from flask import Flask, request, jsonify
 import google.generativeai as genai
 import os
@@ -35,7 +34,12 @@ Give 3 friendly, persuasive bullet points in JSON format: {{"bullets": ["...", "
 
     return jsonify(bullets_json)
 
-# ✅ This is the only part that changed for Render:
+# ✅ Health check route for Render and browser
+@app.route('/')
+def health():
+    return "✅ Snapdeal AI API is live!"
+
+# ✅ Proper binding for Render
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
