@@ -3,7 +3,8 @@ import google.generativeai as genai
 import os
 import json
 
-genai.configure(api_key=os.environ.get("AIzaSyBWpPkPeCAqX_ua_AOgHiDUmuBmhvkvbLk"))  # Securely read from env
+# ✅ FIXED: Hardcoded key for demo/testing
+genai.configure(api_key="AIzaSyBWpPkPeCAqX_ua_AOgHiDUmuBmhvkvbLk")
 
 model = genai.GenerativeModel("models/gemini-1.5-flash-latest")
 
@@ -34,12 +35,10 @@ Give 3 friendly, persuasive bullet points in JSON format: {{"bullets": ["...", "
 
     return jsonify(bullets_json)
 
-# ✅ Health check route for Render and browser
 @app.route('/')
 def health():
     return "✅ Snapdeal AI API is live!"
 
-# ✅ Proper binding for Render
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
