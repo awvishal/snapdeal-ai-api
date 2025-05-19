@@ -12,25 +12,39 @@ model = genai.GenerativeModel("models/gemini-1.5-flash-latest")
 # ✅ Initialize Flask app
 app = Flask(__name__)
 
-# ✅ Main API route
 @app.route('/generate-bullets', methods=['POST'])
 def generate_bullets():
     data = request.json
+
     product = data.get('product', {})
     user = data.get('user', {})
-    custom_prompt = data.get('prompt', None)
+    user_query = data.get('user_query', '')
 
-    # Use custom prompt if provided, else default
-    if custom_prompt:
-        prompt = custom_prompt
-    else:
-        prompt = f"""
-You are a Snapdeal shopping assistant.
+    # Final formatted prompt
+    prompt = f"""
+You are Smart Assist, a Snapdeal shopping assistant.
 
-Product: {product}
-User: {user}
+Your job is to answer the user's question clearly, based on the product and user details provided.
 
-Give 3 friendly, persuasive bullet points in JSON format: {{"bullets": ["...", "...", "..."]}}
+Respond with exactly 3 short, persuasive bullet points (each under 100 characters) that help the user make a confident decision about buying the product.
+
+If the user query asks for suggestions or recommendations, then add a 4th line exactly like this:
+"Reco_API_Hit"
+Do not include this line unless recommendation is explicitly asked.
+
+Respond in this format only:
+{{"bullets": ["...", "...", "...", "Reco_API_Hit" (if needed)]}}
+
+---
+
+Product Details:
+{json.dumps(product, indent=2)}
+
+User Details:
+{json.dumps(user, indent=2)}
+
+User Query:
+{user_query}
 """
 
     try:
@@ -44,6 +58,7 @@ Give 3 friendly, persuasive bullet points in JSON format: {{"bullets": ["...", "
         }
 
     return jsonify(bullets_json)
+
 
 # ✅ Health check
 @app.route('/')
